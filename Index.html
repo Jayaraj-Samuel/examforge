@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ExamForge AI — Turn any syllabus into exam-ready notes</title>
+<meta name="description" content="Paste your unit syllabus and get a complete exam prep package: 10-mark answers, conceptual notes, cheat sheet & important questions. Powered by AI."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;
+  --surface:#13131a;
+  --surface2:#1c1c28;
+  --border:#2a2a3d;
+  --accent:#7c6af7;
+  --accent2:#f7a26a;
+  --text:#f0effe;
+  --muted:#7b7a9a;
+  --green:#4fd1a5;
+  --red:#f87171;
+  --yellow:#fbbf24;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* Background effects */
+.noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(124,106,247,.15) 0%,transparent 70%);pointer-events:none;z-index:0}
+.glow2{position:fixed;bottom:-300px;right:-200px;width:600px;height:600px;background:radial-gradient(ellipse,rgba(247,162,106,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* Layout */
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:2rem 1.5rem 5rem}
+
+/* Header */
+header{text-align:center;padding:3.5rem 0 2.5rem}
+.logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:2rem;text-decoration:none}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-.02em;color:var(--text)}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.3);border-radius:999px;padding:.35rem .9rem;font-size:.78rem;color:var(--accent);margin-bottom:1.2rem;font-weight:500}
+.badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink2 2s ease-in-out infinite}
+@keyframes blink2{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5.5vw,3.2rem);line-height:1.08;letter-spacing:-.04em;margin-bottom:.9rem}
+h1 .grad{background:linear-gradient(100deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{color:var(--muted);font-size:1.05rem;font-weight:300;max-width:540px;margin:0 auto 2rem;line-height:1.65}
+.features{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.feat{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:5px}
+.feat-icon{font-size:.9rem}
+
+/* Input card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem;margin-bottom:1.25rem;transition:border-color .3s}
+.card:focus-within{border-color:rgba(124,106,247,.4)}
+.card-label{display:block;font-family:'Syne',sans-serif;font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;line-height:1.65;padding:1.1rem 1.2rem;resize:vertical;min-height:200px;outline:none;transition:border-color .2s}
+textarea:focus{border-color:rgba(124,106,247,.5)}
+textarea::placeholder{color:#2e2e48;font-style:italic}
+.char-count{text-align:right;font-size:.75rem;color:var(--muted);margin-top:.4rem;opacity:.6}
+
+/* Options */
+.options-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.1rem}
+.chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.42rem .9rem;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all .2s;user-select:none;display:flex;align-items:center;gap:5px}
+.chip.active{background:rgba(124,106,247,.12);border-color:rgba(124,106,247,.45);color:var(--accent)}
+.chip:hover:not(.active){border-color:#3a3a55;color:var(--text)}
+.chip-icon{font-size:.85rem}
+#subject-input{margin-top:12px}
+#subject-hint{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.92rem;padding:.65rem 1rem;outline:none;transition:border-color .2s}
+#subject-hint:focus{border-color:rgba(124,106,247,.5)}
+#subject-hint::placeholder{color:#2e2e48}
+
+/* Generate button */
+.btn-wrap{text-align:center;margin:1.75rem 0 1.5rem}
+.btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--accent) 0%,#5a45d6 100%);color:#fff;border:none;border-radius:14px;padding:1rem 2.4rem;font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;cursor:pointer;transition:all .25s;letter-spacing:.01em;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:opacity .2s}
+.btn:hover:not(:disabled)::before{opacity:1}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 40px rgba(124,106,247,.45)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.pulsing{animation:btnpulse 2s infinite}
+@keyframes btnpulse{0%,100%{box-shadow:0 0 0 0 rgba(124,106,247,.5)}50%{box-shadow:0 0 0 14px rgba(124,106,247,0)}}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Progress */
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.4rem}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.prog-label{font-size:.88rem;color:var(--muted)}
+.prog-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--accent)}
+.prog-bar{height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;margin-bottom:1rem}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+.steps-row{display:flex;gap:7px;flex-wrap:wrap}
+.step{font-size:.75rem;padding:.28rem .7rem;border-radius:6px;border:1px solid var(--border);color:var(--muted);transition:all .3s}
+.step.done{background:rgba(79,209,165,.08);border-color:rgba(79,209,165,.4);color:var(--green)}
+.step.active{background:rgba(124,106,247,.1);border-color:rgba(124,106,247,.4);color:var(--accent);animation:stepfade 1.2s ease-in-out infinite}
+@keyframes stepfade{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:5px;margin-bottom:1.25rem}
+.tab{flex:1;padding:.65rem .5rem;text-align:center;border-radius:10px;font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;cursor:pointer;transition:all .2s;color:var(--muted);white-space:nowrap}
+.tab.active{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.tab:hover:not(.active){color:#aaa}
+@media(max-width:500px){.tab{font-size:.7rem;padding:.55rem .3rem}}
+
+/* Output */
+.output-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.output-header{padding:1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.output-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.output-actions{display:flex;gap:6px;flex-shrink:0}
+.action-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.78rem;padding:.38rem .8rem;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.action-btn:hover{color:var(--text);border-color:#444}
+.action-btn.success{color:var(--green);border-color:rgba(79,209,165,.4)}
+.output-body{padding:1.5rem 1.6rem;max-height:650px;overflow-y:auto;font-size:.92rem;line-height:1.8;color:#cccbeb;white-space:pre-wrap;word-break:break-word}
+.output-body::-webkit-scrollbar{width:4px}
+.output-body::-webkit-scrollbar-track{background:transparent}
+.output-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
+
+/* Formatted output elements */
+.out-h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;color:var(--text);display:block;margin:2rem 0 .6rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.out-h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;color:var(--accent);display:block;margin:1.5rem 0 .45rem}
+.out-h3{font-family:'Syne',sans-serif;font-weight:600;font-size:.95rem;color:var(--accent2);display:block;margin:1.1rem 0 .35rem}
+.cursor{display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:2px;animation:blink .75s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Empty state */
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--muted)}
+.empty-icon{font-size:3rem;margin-bottom:1rem;opacity:.3}
+.empty p{font-size:.9rem;line-height:1.6}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.8rem 1.3rem;font-size:.85rem;color:var(--text);transform:translateY(80px);opacity:0;transition:all .3s;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-color:rgba(248,113,113,.4);color:var(--red)}
+.toast.ok{border-color:rgba(79,209,165,.4);color:var(--green)}
+
+/* Footer */
+footer{text-align:center;padding:2rem 0 0;color:var(--muted);font-size:.8rem;opacity:.5}
+
+/* Responsive */
+@media(max-width:640px){
+  .wrap{padding:1.5rem 1rem 4rem}
+  h1{font-size:1.85rem}
+  .features{gap:1rem}
+  .output-body{max-height:500px}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="glow"></div>
+<div class="glow2"></div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">ExamForge AI</span>
+    </a>
+    <div class="badge"><span class="badge-dot"></span> AI-powered · Free to use</div>
+    <h1>Turn any syllabus into<br><span class="grad">exam-ready notes</span></h1>
+    <p class="sub">Paste your unit syllabus below and instantly get 10-mark answers, conceptual notes, a cheat sheet, and important questions — ready to write in your exam.</p>
+    <div class="features">
+      <span class="feat"><span class="feat-icon">📄</span> 10-mark exam answers</span>
+      <span class="feat"><span class="feat-icon">🧠</span> Conceptual notes</span>
+      <span class="feat"><span class="feat-icon">⚡</span> Smart cheat sheet</span>
+      <span class="feat"><span class="feat-icon">❓</span> Important questions</span>
+    </div>
+  </header>
+
+  <!-- Input -->
+  <div class="card">
+    <label class="card-label">Your Unit Syllabus</label>
+    <textarea id="syllabus" oninput="updateCount()" placeholder="Paste your unit syllabus here...&#10;&#10;Example:&#10;Unit 3: Operating Systems&#10;- Process Management &amp; Scheduling (FCFS, SJF, Round Robin, Priority)&#10;- Memory Management: Paging, Segmentation, Virtual Memory&#10;- Deadlocks: Conditions, Prevention, Avoidance (Banker's Algorithm)&#10;- File Systems, Directory Structures&#10;- I/O Management &amp; Disk Scheduling"></textarea>
+    <div class="char-count" id="char-count">0 characters</div>
+
+    <div class="options-grid">
+      <span class="chip active" id="chip-diagrams" onclick="toggleChip(this,'diagrams')"><span class="chip-icon">📊</span> Diagrams</span>
+      <span class="chip active" id="chip-numerical" onclick="toggleChip(this,'numerical')"><span class="chip-icon">🔢</span> Numerical problems</span>
+      <span class="chip active" id="chip-cheatsheet" onclick="toggleChip(this,'cheatsheet')"><span class="chip-icon">⚡</span> Cheat sheet</span>
+      <span class="chip active" id="chip-questions" onclick="toggleChip(this,'questions')"><span class="chip-icon">❓</span> Important questions</span>
+      <span class="chip" id="chip-subject" onclick="toggleChip(this,'subject')"><span class="chip-icon">🏷️</span> Subject hint</span>
+    </div>
+
+    <div id="subject-input" style="display:none">
+      <input type="text" id="subject-hint" placeholder="e.g. Computer Science, Electronics, MBA Finance, Civil Engineering..." />
+    </div>
+  </div>
+
+  <!-- Generate Button -->
+  <div class="btn-wrap">
+    <button class="btn" id="genBtn" onclick="generate()">
+      <span id="btn-icon">⚡</span>
+      <span id="btn-text">Generate Exam Package</span>
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div id="progress-section" style="display:none">
+    <div class="progress-card">
+      <div class="prog-top">
+        <span class="prog-label" id="prog-label">Starting...</span>
+        <span class="prog-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="steps-row" id="steps-row"></div>
+    </div>
+  </div>
+
+  <!-- Output Tabs + Content -->
+  <div id="output-section" style="display:none">
+    <div class="tabs" id="tabs">
+      <div class="tab active" onclick="switchTab(0)">📄 Exam Answers</div>
+      <div class="tab" onclick="switchTab(1)">🧠 Concepts</div>
+      <div class="tab" onclick="switchTab(2)">⚡ Cheat Sheet</div>
+      <div class="tab" onclick="switchTab(3)">❓ Questions</div>
+    </div>
+
+    <div class="output-card">
+      <div class="output-header">
+        <div class="output-title" id="out-title">FILE 1: Exam Ready Answers</div>
+        <div class="output-actions">
+          <button class="action-btn" id="downloadBtn" onclick="downloadTab()">↓ Save</button>
+          <button class="action-btn" id="copyBtn" onclick="copyContent()">Copy</button>
+        </div>
+      </div>
+      <div class="output-body" id="output-body">
+        <div class="empty">
+          <div class="empty-icon">🎓</div>
+          <p>Your exam prep package will appear here.<br>Paste your syllabus and hit Generate!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>ExamForge AI · Built with Claude · For educational use only</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ──────────────────────────────────────────────────────────────────
+const opts = { diagrams:true, numerical:true, cheatsheet:true, questions:true, subject:false };
+const results = { 0:'', 1:'', 2:'', 3:'' };
+const titles  = ['📄 FILE 1: Exam Ready Answers','🧠 FILE 2: Conceptual Notes','⚡ Smart Cheat Sheet','❓ Important Questions'];
+let currentTab = 0;
+let isStreaming = false;
+
+const STEPS = ['Analyzing syllabus','Structuring parts','Writing exam answers','Building concepts','Cheat sheet','Questions'];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function updateCount(){
+  const n = document.getElementById('syllabus').value.length;
+  document.getElementById('char-count').textContent = n.toLocaleString() + ' characters';
+}
+
+function toggleChip(el, key){
+  if(key==='subject'){
+    opts.subject = !opts.subject;
+    document.getElementById('subject-input').style.display = opts.subject ? 'block' : 'none';
+    el.classList.toggle('active', opts.subject);
+    return;
+  }
+  opts[key] = !opts[key];
+  el.classList.toggle('active', opts[key]);
+}
+
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function setProgress(pct, label){
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent  = pct + '%';
+  document.getElementById('prog-label').textContent = label;
+}
+
+function markStep(i, state){
+  const el = document.getElementById('step'+i);
+  if(!el) return;
+  el.className = 'step' + (state==='done'?' done' : state==='active'?' active' : '');
+}
+
+// ─── Tab Switching ────────────────────────────────────────────────────────────
+function switchTab(i){
+  currentTab = i;
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active', idx===i));
+  document.getElementById('out-title').textContent = titles[i];
+  const body = document.getElementById('output-body');
+  if(results[i]){
+    body.innerHTML = formatOutput(results[i]);
+  } else {
+    body.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div><p>This section is being generated...<br>Switch back when it\'s ready!</p></div>';
+  }
+}
+
+// ─── Output Formatter ─────────────────────────────────────────────────────────
+function formatOutput(text){
+  if(!text) return '';
+  const escaped = text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  return escaped
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1}\s(.+)$/gm,'<span class="out-h1">$1</span>')
+    .replace(/^#{2}\s(.+)$/gm,'<span class="out-h2">$1</span>')
+    .replace(/^#{3}\s(.+)$/gm,'<span class="out-h3">$1</span>')
+    .replace(/\n/g,'<br>');
+}
+
+// ─── Copy & Download ──────────────────────────────────────────────────────────
+function copyContent(){
+  const text = results[currentTab];
+  if(!text){ showToast('Nothing to copy yet!'); return; }
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('success');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('success'); }, 2200);
+    showToast('Copied to clipboard!','ok');
+  }).catch(()=> showToast('Copy failed. Try manually.','error'));
+}
+
+function downloadTab(){
+  const text = results[currentTab];
+  if(!text){ showToast('Nothing to download yet!'); return; }
+  const labels = ['exam-answers','conceptual-notes','cheat-sheet','important-questions'];
+  const blob = new Blob([text], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'examforge-' + labels[currentTab] + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded!','ok');
+}
+
+// ─── Prompt Builder ───────────────────────────────────────────────────────────
+function buildPrompts(syllabus, hint){
+  const subLine   = hint ? `Subject/Context: ${hint}\n` : '';
+  const diagLine  = opts.diagrams  ? '- Include text-based diagrams, flowcharts, block diagrams, and ASCII art wherever applicable.\n' : '';
+  const numLine   = opts.numerical ? `- For any topics involving formulas or calculations, follow this strict format:
+  Step 1: Problem Understanding, Step 2: Steps to Follow, Step 3: Formula Used,
+  Step 4: Simple Example, Step 5: Step-by-Step Solution, Step 6: Final Answer (highlighted).\n` : '';
+
+  const base = `${subLine}UNIT SYLLABUS:\n${syllabus}\n\n`;
+
+  const file1 = base + `You are an expert exam preparation assistant. Create FILE 1: "Exam Ready Answers".
+
+Rules:
+1. Divide the unit into 2-3 logical PARTS based on topic similarity (basic→intermediate→advanced).
+2. For EVERY topic, write a complete 10-mark answer that includes:
+   - Clear definition/introduction
+   - Detailed explanation in structured paragraphs
+   - Bullet points where needed
+   - Headings and subheadings (use ## for parts, ### for topics)
+   - Real examples
+   - Strong conclusion
+3. Maintain smooth continuity between topics like a story.
+4. Make answers ready to write directly in exam.
+${diagLine}${numLine}
+Use # for main title, ## for PART headings, ### for topic headings.
+Start now:`;
+
+  const file2 = base + `You are an expert exam preparation assistant. Create FILE 2: "Conceptual Notes (Ultra Simple)".
+
+Rules:
+1. Explain EVERY topic in very simple language — assume the reader is a complete beginner.
+2. Use short sentences. Use real-life analogies and examples.
+3. Cover every topic from the syllabus.
+${diagLine}
+4. Include text-based flowcharts (using arrows →), block diagrams (using boxes [ ]), simple architectures, comparisons.
+5. Format: quick to revise, easy to memorize, visually clear.
+
+Use # for main title, ## for PART headings, ### for topic headings.
+Start now:`;
+
+  const cheatsheet = opts.cheatsheet
+    ? base + `Create a "SMART CHEAT SHEET" for this unit.
+
+Include all of:
+## KEY DEFINITIONS — one-line definitions for every important term
+## FORMULAS & ALGORITHMS — all formulas, steps, algorithms in the unit
+## QUICK COMPARISONS — side-by-side comparison tables for similar concepts
+## MEMORY TRICKS — mnemonics, acronyms, memory hooks for lists and steps
+## CHEAT CODES — tricks to remember long answers, shortcut methods to reconstruct answers in exam, patterns to recall complex topics
+## RAPID FIRE RECAP — one-sentence summary per topic
+
+Make it ultra-compact, high-density, and high-retention. Formatted for quick scanning.
+Start now:`
+    : base + `Write a brief key-point summary of this unit in bullet format.`;
+
+  const questions = opts.questions
+    ? base + `Generate IMPORTANT EXAM QUESTIONS for this unit.
+
+## LONG ANSWER QUESTIONS (10 Marks)
+List 8-10 most expected questions. Mark the 3 most important with ⭐
+
+## SHORT ANSWER QUESTIONS (2-5 Marks)
+List 10-12 expected short questions.
+
+## FILL IN THE BLANKS / ONE-LINERS (1 Mark)
+List 8-10 expected one-liners.
+
+Base these strictly on syllabus weight, concept importance, and common exam patterns.
+Start now:`
+    : base + `List the 5 most important questions from this unit with brief answer hints.`;
+
+  return { file1, file2, cheatsheet, questions };
+}
+
+// ─── Main Generate Function ───────────────────────────────────────────────────
+async function generate(){
+  const syllabus = document.getElementById('syllabus').value.trim();
+  if(!syllabus){ showToast('Please paste your syllabus first! 📋'); return; }
+  if(isStreaming) return;
+
+  const hint = opts.subject ? (document.getElementById('subject-hint').value.trim()) : '';
+
+  // Reset
+  isStreaming = true;
+  results[0] = results[1] = results[2] = results[3] = '';
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('btn-icon').innerHTML = '<div class="spinner"></div>';
+  document.getElementById('btn-text').textContent = 'Generating...';
+  btn.classList.add('pulsing');
+
+  document.getElementById('progress-section').style.display = 'block';
+  document.getElementById('output-section').style.display   = 'block';
+  document.getElementById('output-body').innerHTML = '<div class="empty"><div class="empty-icon">⚡</div><p>Building your exam package...<br>This takes about 60–90 seconds.</p></div>';
+
+  const stepsRow = document.getElementById('steps-row');
+  stepsRow.innerHTML = STEPS.map((s,i)=>`<div class="step" id="step${i}">${s}</div>`).join('');
+  markStep(0,'active');
+
+  setProgress(5,'Analyzing your syllabus...');
+
+  const prompts = buildPrompts(syllabus, hint);
+
+  try{
+    markStep(0,'done'); markStep(1,'active');
+    setProgress(10,'Structuring the unit...');
+    await sleep(400);
+    markStep(1,'done');
+
+    await streamSection(0, prompts.file1,      15, 55, 'Writing 10-mark exam answers...', 2);
+    await streamSection(1, prompts.file2,      56, 78, 'Building conceptual notes...',    3);
+    await streamSection(2, prompts.cheatsheet, 79, 91, 'Crafting cheat sheet...',         4);
+    await streamSection(3, prompts.questions,  92, 100,'Generating important questions...', 5);
+
+    setProgress(100, '✅ Done! Your exam package is ready.');
+    STEPS.forEach((_,i)=>markStep(i,'done'));
+    switchTab(0);
+    showToast('Exam package ready! 🎉','ok');
+
+  } catch(e){
+    console.error(e);
+    const msg = e.message || 'Something went wrong.';
+    document.getElementById('output-body').innerHTML = `<div style="color:var(--red);padding:1rem;line-height:1.7"><strong>Error:</strong> ${msg}<br><br>Please check your API key or try again in a moment.</div>`;
+    showToast('Generation failed. Please try again.','error');
+  }
+
+  btn.disabled = false;
+  document.getElementById('btn-icon').textContent = '⚡';
+  document.getElementById('btn-text').textContent = 'Regenerate';
+  btn.classList.remove('pulsing');
+  isStreaming = false;
+}
+
+// ─── Streaming Section ────────────────────────────────────────────────────────
+async function streamSection(tabIdx, prompt, progStart, progEnd, label, stepIdx){
+  markStep(stepIdx, 'active');
+  setProgress(progStart, label);
+
+  const body = document.getElementById('output-body');
+  if(tabIdx === currentTab){
+    body.innerHTML = '<span id="stream-out"></span><span class="cursor"></span>';
+  }
+
+  const response = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      stream: true,
+      messages:[{ role:'user', content: prompt }]
+    })
+  });
+
+  if(!response.ok){
+    let errMsg = 'API error ' + response.status;
+    try{ const j = await response.json(); errMsg = j.error?.message || errMsg; }catch{}
+    throw new Error(errMsg);
+  }
+
+  const reader  = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+  let buffer   = '';
+
+  while(true){
+    const { done, value } = await reader.read();
+    if(done) break;
+
+    buffer += decoder.decode(value, { stream:true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for(const line of lines){
+      if(!line.startsWith('data:')) continue;
+      const data = line.slice(5).trim();
+      if(data === '[DONE]') continue;
+      try{
+        const json = JSON.parse(data);
+        if(json.type === 'content_block_delta' && json.delta?.text){
+          fullText += json.delta.text;
+          results[tabIdx] = fullText;
+
+          if(tabIdx === currentTab){
+            const el = document.getElementById('stream-out');
+            if(el){ el.innerHTML = formatOutput(fullText); body.scrollTop = body.scrollHeight; }
+          }
+
+          const chars = fullText.length;
+          const pct = Math.round(progStart + Math.min((chars / 4000) * (progEnd - progStart), progEnd - progStart - 1));
+          setProgress(pct, label);
+        }
+      } catch{}
+    }
+  }
+
+  results[tabIdx] = fullText;
+  if(tabIdx === currentTab){
+    body.innerHTML = formatOutput(fullText);
+  }
+  markStep(stepIdx,'done');
+  setProgress(progEnd, label);
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+</script>
+</body>
+</html>
